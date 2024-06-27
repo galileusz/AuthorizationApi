@@ -2,6 +2,12 @@
 
 AuthManager is a .NET Core project that provides authentication and authorization services, including user management, registration, login, and token management.
 
+## Dependencies
+
+This project uses the following third-party libraries:
+
+- [Moq](https://github.com/moq/moq) - A mocking library for .NET (License: BSD-3-Clause)
+
 ## Table of Contents
 
 - [Features](#features)
