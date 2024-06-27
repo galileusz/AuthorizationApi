@@ -106,11 +106,10 @@ AuthManager/
 │   ├── Services/                # Business logic
 │   ├── DAL/                     # Data Access Layer
 │   │   ├── Entities/            # Database entities
+│   │   ├── Migrations/          # Database migrations
 │   │   ├── Repositories/        # Repository interfaces and implementations
+│   ├── Models/                  # DTOs used in API
 │   └── Program.cs               # Main entry point
-├── AuthManager.Domain/          # Domain layer
-├── AuthManager.Infrastructure/  # Infrastructure layer
-├── AuthManager.Application/     # Application layer
 └── AuthManager.sln              # Solution file
 ```
 
