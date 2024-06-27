@@ -33,7 +33,8 @@ public class TokenGenerator : ITokenGenerator
         var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? throw new ArgumentNullException(nameof(user.UserName))),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iss, _jwtIssuer)
             };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
