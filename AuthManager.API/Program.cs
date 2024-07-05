@@ -26,18 +26,8 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
+    options.TokenValidationParameters = GetTokenValidationParameters(builder.Configuration);
 });
-
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -62,3 +52,26 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+TokenValidationParameters GetTokenValidationParameters(IConfiguration configuration)
+{
+    const int VALID_KEY_LENGTH = 32;
+
+    var jwtKey = configuration["Jwt:Key"] ?? throw new ArgumentException("Jwt.Key not configured", nameof(configuration));
+    var jwtIssuer = configuration["Jwt:Issuer"] ?? throw new ArgumentException("Jwt.Issuer not configured", nameof(configuration));
+    var jwtAudience = configuration["Jwt:Audience"] ?? throw new ArgumentException("Jwt.Audience not configured", nameof(configuration));
+
+    if (jwtKey.Length != VALID_KEY_LENGTH)
+        throw new ArgumentException($"Jwt.Key is not valid (length = {VALID_KEY_LENGTH})", nameof(configuration));
+
+    var result = new TokenValidationParameters();
+    result.ValidateIssuer = true;
+    result.ValidateAudience = true;
+    result.ValidateLifetime = true;
+    result.ValidateIssuerSigningKey = true;
+    result.ValidIssuer = jwtIssuer;
+    result.ValidAudience = jwtAudience;
+    result.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+    return result;
+}

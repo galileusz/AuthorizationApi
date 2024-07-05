@@ -46,18 +46,20 @@ namespace AuthManager.API.Controllers
         {
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
 
-            if (result.Succeeded)
-            {
-                var user = await _userManager.FindByNameAsync(model.Username);
-                var token = _tokenGenerator.GenerateToken(user);
-                var refreshToken = _tokenGenerator.GenerateRefreshToken(user.Id);
+            if (false == result.Succeeded)
+                return Unauthorized();
 
-                await _refreshTokenRepository.AddAsync(refreshToken);
+            var user = await _userManager.FindByNameAsync(model.Username);
 
-                return Ok(new { Token = token, RefreshToken = refreshToken.Token });
-            }
+            if (user is null)
+                return Unauthorized();
 
-            return Unauthorized();
+            var token = _tokenGenerator.GenerateToken(user);
+            var refreshToken = _tokenGenerator.GenerateRefreshToken(user.Id);
+
+            await _refreshTokenRepository.AddAsync(refreshToken);
+
+            return Ok(new { Token = token, RefreshToken = refreshToken.Token });
         }
 
         [HttpPost("refresh")]
@@ -71,6 +73,10 @@ namespace AuthManager.API.Controllers
             }
 
             var user = await _userManager.FindByIdAsync(refreshToken.UserId);
+
+            if (user is null)
+                return Unauthorized();
+
             var token = _tokenGenerator.GenerateToken(user);
 
             var newRefreshToken = _tokenGenerator.GenerateRefreshToken(user.Id);
